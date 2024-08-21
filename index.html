@@ -148,7 +148,11 @@
     >
 
     <!-- Weather condition icon below the title -->
-    <img id="weather-condition-icon" alt="Weather Condition Icon" />
+    <img
+      id="weather-condition-icon"
+      src="images/placeholder.png"
+      alt="Weather Condition Icon"
+    />
 
     <div class="container">
       <header>
@@ -257,11 +261,17 @@
         const location = `${data.name}, ${data.sys.country}`;
         const dateTime = new Date().toLocaleString();
         const temperature = `${data.main.temp}°${
-          data.units === "metric" ? "C" : "F"
+          document.querySelector('input[name="unit"]:checked').value ===
+          "metric"
+            ? "C"
+            : "F"
         }`;
         const humidity = `${data.main.humidity}%`;
         const wind = `${data.wind.speed} ${
-          data.units === "metric" ? "m/s" : "mph"
+          document.querySelector('input[name="unit"]:checked').value ===
+          "metric"
+            ? "m/s"
+            : "mph"
         } ${data.wind.deg}°`;
         const sunriseTime = new Date(
           data.sys.sunrise * 1000
@@ -285,7 +295,6 @@
         const lat = data.coord.lat;
         const lon = data.coord.lon;
 
-        // Check if the map already exists
         if (!window.myMap) {
           window.myMap = L.map("map").setView([lat, lon], 10);
 
@@ -295,11 +304,17 @@
 
           window.myMarker = L.marker([lat, lon]).addTo(window.myMap);
         } else {
-          // Update the map's view and marker
           window.myMap.setView([lat, lon], 10);
           window.myMarker.setLatLng([lat, lon]);
         }
       }
+
+      // Initialize the page with a default city
+      window.addEventListener("load", function () {
+        const defaultCity = "New York";
+        document.getElementById("city").value = defaultCity;
+        fetchWeather();
+      });
     </script>
   </body>
 </html>
