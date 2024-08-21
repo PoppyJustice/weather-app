@@ -1,0 +1,21 @@
+/* Ensure that the button has proper styling */
+#search {
+  padding: 5px 10px;
+  background-color: #4caf50; /* Green background color */
+  color: white; /* White text color */
+  border: none; /* Remove border */
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+/* Hover effect for the button */
+#search:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+/* Optional: Add focus effect for better accessibility */
+#search:focus {
+  outline: none; /* Remove default outline */
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2); /* Add a custom outline */
+}

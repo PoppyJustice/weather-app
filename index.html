@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+      /* Styling the container to be full width */
+      .container {
+        width: 100%;
+      }
+
+      /* Aligning header items */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+      }
+
+      /* Center the h1 (title) in the header */
+      header h1 {
+        margin: 0 auto;
+        flex-grow: 1;
+        text-align: center;
+      }
+
+      /* Align the search bar to the right */
+      .search-bar {
+        display: flex;
+        align-items: center;
+      }
+
+      /* Styling for input and button */
+      #city {
+        padding: 5px;
+        margin-right: 10px;
+      }
+
+      #search {
+        padding: 5px 10px;
+        background-color: #4caf50; /* Green background color */
+        color: white; /* White text color */
+        border: none; /* Remove border */
+        border-radius: 4px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor on hover */
+        transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+      }
+
+      #search:hover {
+        background-color: #45a049; /* Darker green on hover */
+      }
+
+      /* Optional: Add focus effect for better accessibility */
+      #search:focus {
+        outline: none; /* Remove default outline */
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2); /* Add a custom outline */
+      }
+
+      .info-item {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        margin: 10px 0;
+      }
+
+      .info-group {
+        text-align: center;
+        margin: 0 20px;
+      }
+
+      .info-icon {
+        width: 40px;
+        height: 40px;
+        display: block;
+        margin: 0 auto;
+      }
+
+      .info-title,
+      .info-data {
+        display: block;
+        font-size: 16px;
+      }
+
+      .info-title {
+        font-weight: bold;
+        margin-top: 5px; /* Space between image and title */
+      }
+
+      /* Centering the weather information */
+      .weather-info {
+        text-align: center;
+      }
+
+      /* Styling the footer */
+      footer {
+        text-align: center;
+        padding: 0px;
+      }
+
+      /* Align to the right */
+      .align-right {
+        display: flex;
+        justify-content: flex-end; /* Align items to the right */
+        margin-top: 10px; /* Add some space above the unit options */
+      }
+
+      .unit-options {
+        display: flex; /* Align radio buttons horizontally */
+        align-items: center;
+        gap: 10px; /* Space between radio buttons */
+      }
+
+      /* Styling the weather icon under the title */
+      #weather-condition-icon {
+        display: block;
+        margin: 10px auto;
+        width: 100px;
+        height: 100px;
+      }
+
+      /* Sunrise and sunset images styling */
+      .sunrise-sunset-images {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        margin-top: 10px;
+      }
+
+      .sunrise-sunset-images img {
+        width: 50px;
+        height: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <b
+      ><center style="font-family: Arial, sans-serif; font-size: 30px">
+        Weather App
+      </center></b
+    >
+
+    <!-- Weather condition icon below the title -->
+    <img id="weather-condition-icon" alt="Weather Condition Icon" />
+
+    <div class="container">
+      <header>
+        <h1></h1>
+        <div class="search-bar">
+          <input type="text" id="city" placeholder="Search a city..." />
+          <button id="search">Search</button>
+        </div>
+      </header>
+      <div class="align-right">
+        <div class="unit-options">
+          <label for="celsius">Celsius</label>
+          <input type="radio" name="unit" id="celsius" value="metric" checked />
+          <label for="fahrenheit">Fahrenheit</label>
+          <input type="radio" name="unit" id="fahrenheit" value="imperial" />
+        </div>
+      </div>
+      <main>
+        <div class="weather-info">
+          <h2 id="location"></h2>
+
+          <div class="info-item">
+            <div class="info-group">
+              <img
+                src="images/date-time.png"
+                alt="Date-Time"
+                class="info-icon"
+              />
+              <span class="info-title">Date/Time:</span>
+              <span id="date-time" class="info-data"></span>
+            </div>
+
+            <div class="info-group">
+              <img
+                src="images/temprature.png"
+                alt="Temperature"
+                class="info-icon"
+              />
+              <span class="info-title">Temperature:</span>
+              <span id="temperature" class="info-data"></span>
+            </div>
+
+            <div class="info-group">
+              <img src="images/humidity.png" alt="Humidity" class="info-icon" />
+              <span class="info-title">Humidity:</span>
+              <span id="humidity" class="info-data"></span>
+            </div>
+
+            <div class="info-group">
+              <img src="images/wind.png" alt="Wind" class="info-icon" />
+              <span class="info-title">Wind:</span>
+              <span id="wind" class="info-data"></span>
+            </div>
+          </div>
+          <br />
+          <br />
+          <!-- Sunrise and Sunset images -->
+          <div class="sunrise-sunset-images">
+            <div>
+              <img src="images/sunrise.png" alt="Sunrise" />
+              <span id="sunrise-time"></span>
+            </div>
+            <div>
+              <img src="images/sunset.png" alt="Sunset" />
+              <span id="sunset-time"></span>
+            </div>
+          </div>
+        </div>
+        <div id="map" style="height: 300px; width: 100%"></div>
+      </main>
+      <footer>
+        <p>Weather data provided by OpenWeather</p>
+        <p>Map provided by Leaflet</p>
+      </footer>
+    </div>
+    <script>
+      document.getElementById("search").addEventListener("click", fetchWeather);
+
+      function fetchWeather() {
+        const city = document.getElementById("city").value.trim();
+        const unit = document.querySelector('input[name="unit"]:checked').value;
+        const apiKey = "583f25b9e2d5c948e139f98fd4c65a06"; // Replace with your OpenWeather API key
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=${unit}&appid=${apiKey}`;
+
+        fetch(url)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(
+                "Network response was not ok: " + response.statusText
+              );
+            }
+            return response.json();
+          })
+          .then((data) => {
+            updateUI(data);
+          })
+          .catch((error) => {
+            console.error("Error fetching weather data:", error);
+            alert(
+              "Failed to fetch weather data. Please check the city name and try again."
+            );
+          });
+      }
+
+      function updateUI(data) {
+        const location = `${data.name}, ${data.sys.country}`;
+        const dateTime = new Date().toLocaleString();
+        const temperature = `${data.main.temp}°${
+          data.units === "metric" ? "C" : "F"
+        }`;
+        const humidity = `${data.main.humidity}%`;
+        const wind = `${data.wind.speed} ${
+          data.units === "metric" ? "m/s" : "mph"
+        } ${data.wind.deg}°`;
+        const sunriseTime = new Date(
+          data.sys.sunrise * 1000
+        ).toLocaleTimeString();
+        const sunsetTime = new Date(
+          data.sys.sunset * 1000
+        ).toLocaleTimeString();
+        const iconUrl = `http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+
+        // Update weather information
+        document.getElementById("location").textContent = location;
+        document.getElementById("date-time").textContent = dateTime;
+        document.getElementById("temperature").textContent = temperature;
+        document.getElementById("humidity").textContent = humidity;
+        document.getElementById("wind").textContent = wind;
+        document.getElementById("sunrise-time").textContent = sunriseTime;
+        document.getElementById("sunset-time").textContent = sunsetTime;
+        document.getElementById("weather-condition-icon").src = iconUrl;
+
+        // Initialize or update the Leaflet map
+        const lat = data.coord.lat;
+        const lon = data.coord.lon;
+
+        // Check if the map already exists
+        if (!window.myMap) {
+          window.myMap = L.map("map").setView([lat, lon], 10);
+
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 18,
+          }).addTo(window.myMap);
+
+          window.myMarker = L.marker([lat, lon]).addTo(window.myMap);
+        } else {
+          // Update the map's view and marker
+          window.myMap.setView([lat, lon], 10);
+          window.myMarker.setLatLng([lat, lon]);
+        }
+      }
+    </script>
+  </body>
+</html>
